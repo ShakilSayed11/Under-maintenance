@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* Custom CSS to hide elements */
+    .ms-Menu-button {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      setTimeout(function() {
+        var viewDropdown = document.querySelector(".ms-Menu-button");
+        if (viewDropdown) {
+          viewDropdown.style.display = "none";
+        }
+      }, 2000); // Adjust the delay as needed
+    });
+  </script>
+</body>
+</html>
