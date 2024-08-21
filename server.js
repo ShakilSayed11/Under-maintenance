@@ -3,7 +3,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-require('dotenv').config(); // To load environment variables from a .env file
+require('dotenv').config(); // Load environment variables from a .env file
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,7 +14,7 @@ app.use(cors());
 // Replace with your sheet ID
 const sheetId = '1QqxjcZj8YZWHNri6quC3Cu3uUo9pWrlP9P73k3oKUAM';
 
-// Route to fetch data from Google Sheets based on date range and selected filters
+// Route to fetch and process data from Google Sheets based on the frontend's input
 app.get('/fetch-data', async (req, res) => {
   const { fromDate, toDate, selectedDepartments, selectedWorkingRegions } = req.query;
 
@@ -22,14 +22,15 @@ app.get('/fetch-data', async (req, res) => {
     const apiKey = process.env.GOOGLE_SHEET_API_KEY; // Your Google API key stored in environment variables
     const range = 'A:Z';
 
+    // Fetch data from Google Sheets
     const response = await axios.get(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`);
     const data = response.data;
-    const headers = data.values[0];
-    const rows = data.values.slice(1);
+    const headers = data.values[0]; // Extract headers (first row)
+    const rows = data.values.slice(1); // Extract rows (excluding headers)
 
     let filteredRows = [];
 
-    // Filter rows based on the provided dates and selected departments/working regions
+    // Process rows: filter based on date range, department, and region
     rows.forEach(row => {
       const taskDate = row[headers.indexOf('Task Date')];
       const workingDepartment = row[headers.indexOf('Working Department')];
@@ -45,7 +46,7 @@ app.get('/fetch-data', async (req, res) => {
       }
     });
 
-    // Send filtered rows back to the frontend
+    // Send filtered rows and headers back to the frontend for further processing
     res.json({ headers, rows: filteredRows });
   } catch (error) {
     console.error('Error fetching data:', error);
